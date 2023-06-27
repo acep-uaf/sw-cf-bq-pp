@@ -1,6 +1,6 @@
-from google.cloud import bigquery, pubsub_v1
+from google.cloud import bigquery
+from google.api_core.exceptions import Forbidden, BadRequest, GoogleAPICallError
 import logging
-from google.api_core.exceptions import NotFound, Forbidden
 import base64
 import json
 
@@ -16,12 +16,52 @@ def bq_pp(event, context):
         dataset_id = message_dict.get('dataset_id')
         table_id = message_dict.get('table_id')
 
-        bigquery_uri = f'{project_id}:{dataset_id}.{table_id}'
+        if not all([project_id, dataset_id, table_id]):
+            print('Error: Missing necessary parameters in the message.')
+            return
+
+        bigquery_uri = f'{project_id}.{dataset_id}.{table_id}'
+
         print(f'BigQuery URI: {bigquery_uri}')
         logging.info(f'BigQuery URI: {bigquery_uri}')
 
-        #client = bigquery.Client(project=project_id)
+        client = bigquery.Client(project=project_id)
+
+        # Define the query
+        query = f"""
+        CREATE OR REPLACE TABLE `{project_id}.{dataset_id}.vtndstw`
+        AS 
+        SELECT 
+            TIMESTAMP_ADD(
+                PARSE_DATETIME(
+                    '%Y/%m/%d %I:%M:%S %p', 
+                    CASE
+                        WHEN t.datetime NOT LIKE '2022/%' THEN t.measurement_name
+                        WHEN t.measurement_name LIKE '2022/%' THEN t.measurement_name
+                        ELSE t.datetime
+                    END
+                ), 
+                INTERVAL CAST(t.millis AS INT64) MILLISECOND
+            ) AS datetime,
+            CASE
+                WHEN t.datetime NOT LIKE '2022/%' THEN t.datetime
+                WHEN t.measurement_name LIKE '2022/%' THEN t.datetime
+                ELSE t.measurement_name
+            END AS measurement_name,
+            CAST(t.measurement_value AS FLOAT64) AS measuremnet_value,
+            t.measurement_status
+        FROM `{bigquery_uri}` t
+        ORDER BY datetime;
+        """
+        # Run the query
+        query_job = client.query(query)
+        query_job.result()  # Wait for the job to finish
 
     except Forbidden as e:
-        print(f'Error occurred: {str(e)}. Please check the Cloud Function has necessary permissions.')
-        raise
+        print(f'Forbidden error occurred: {str(e)}. Please check the Cloud Function has necessary permissions.')
+    except BadRequest as e:
+        print(f'Bad request error occurred: {str(e)}. Please check the query and the table.')
+    except GoogleAPICallError as e:
+        print(f'Google API Call error occurred: {str(e)}. Please check the API request.')
+    except Exception as e:
+        print(f'An unexpected error occurred: {str(e)}')

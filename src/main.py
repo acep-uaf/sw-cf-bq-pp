@@ -29,23 +29,23 @@ def bq_pp(event, context):
 
         # Define the query
         query = f"""
-        CREATE OR REPLACE TABLE `{project_id}.{dataset_id}.vtndstw`
+        CREATE OR REPLACE TABLE `{project_id}.{dataset_id}.vtndpp`
         AS 
         SELECT 
             TIMESTAMP_ADD(
                 PARSE_DATETIME(
                     '%Y/%m/%d %I:%M:%S %p', 
                     CASE
-                        WHEN t.datetime NOT LIKE '2022/%' THEN t.measurement_name
-                        WHEN t.measurement_name LIKE '2022/%' THEN t.measurement_name
+                        WHEN t.datetime NOT LIKE '20%/%' THEN t.measurement_name
+                        WHEN t.measurement_name LIKE '20%/%' THEN t.measurement_name
                         ELSE t.datetime
                     END
                 ), 
                 INTERVAL CAST(t.millis AS INT64) MILLISECOND
             ) AS datetime,
             CASE
-                WHEN t.datetime NOT LIKE '2022/%' THEN t.datetime
-                WHEN t.measurement_name LIKE '2022/%' THEN t.datetime
+                WHEN t.datetime NOT LIKE '20%/%' THEN t.datetime
+                WHEN t.measurement_name LIKE '20%/%' THEN t.datetime
                 ELSE t.measurement_name
             END AS measurement_name,
             CAST(t.measurement_value AS FLOAT64) AS measuremnet_value,

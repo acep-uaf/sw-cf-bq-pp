@@ -48,7 +48,7 @@ def bq_pp(event, context):
                 WHEN t.measurement_name LIKE '20%/%' THEN t.datetime
                 ELSE t.measurement_name
             END AS measurement_name,
-            CAST(t.measurement_value AS FLOAT64) AS measuremnet_value,
+            CAST(t.measurement_value AS FLOAT64) AS measurement_value,
             t.measurement_status
         FROM `{bigquery_uri}` t
         ORDER BY datetime;

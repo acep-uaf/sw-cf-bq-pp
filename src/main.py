@@ -33,14 +33,16 @@ def bq_pp(event, context):
         AS 
         SELECT 
             TIMESTAMP_ADD(
-                PARSE_DATETIME(
-                    '%Y/%m/%d %I:%M:%S %p', 
-                    CASE
-                        WHEN t.datetime NOT LIKE '20%/%' THEN t.measurement_name
-                        WHEN t.measurement_name LIKE '20%/%' THEN t.measurement_name
-                        ELSE t.datetime
-                    END
-                ), 
+                TIMESTAMP(
+                    PARSE_DATETIME(
+                        '%Y/%m/%d %I:%M:%S %p', 
+                        CASE
+                            WHEN t.datetime NOT LIKE '20%/%' THEN t.measurement_name
+                            WHEN t.measurement_name LIKE '20%/%' THEN t.measurement_name
+                            ELSE t.datetime
+                        END
+                    )
+                ),
                 INTERVAL CAST(t.millis AS INT64) MILLISECOND
             ) AS datetime,
             CASE

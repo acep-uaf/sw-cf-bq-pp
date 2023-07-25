@@ -1,4 +1,4 @@
-from google.cloud import bigquery
+from google.cloud import bigquery, pubsub_v1
 from google.api_core.exceptions import Forbidden, BadRequest, GoogleAPICallError
 import logging
 import base64

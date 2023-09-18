@@ -20,7 +20,20 @@ Thus, the `bq_pp` function essentially acts as an intermediary that processes an
 
 ### Deployment
 
-Deploy this Cloud Function by running the `eiedeploy.sh` shell script:
+Before deploying, ensure you've configured the `eiedeploy.env` file with the appropriate values. The following environment variables should be defined in the file:
+
+- `GEN2`
+- `RUNTIME`
+- `REGION`
+- `SOURCE`
+- `ENTRY_POINT`
+- `MEMORY`
+- `TIMEOUT`
+- `TRIGGER_TOPIC`
+
+Ensure to set each `<value>` in the `eiedeploy.env` file appropriately before deploying the Cloud Function. **Note:** For security reasons, do not check the `eiedeploy.env` with set values into a public repository such as GitHub.
+
+Deploy the Cloud Function with the provided shell script:
 
 ```bash
 ./eiedeploy.sh
@@ -30,15 +43,22 @@ Deploy this Cloud Function by running the `eiedeploy.sh` shell script:
 This script wraps the following `gcloud` command:
 
 ```bash
+
+#!/bin/bash
+
+# Source the .env file
+source eiedeploy.env
+
+# Deploy the function
 gcloud functions deploy sw-cw-bq-pp \
-  --gen2 \
-  --runtime=python311 \
-  --region=us-west1 \
-  --source=src \
-  --entry-point=bq_pp \
-  --memory 16384MB \
-  --timeout 540s  \
-  --trigger-topic sw-cf-bq-pp-dt-rs
+  --$GEN2 \
+  --runtime=$RUNTIME \
+  --region=$REGION \
+  --source=$SOURCE \
+  --entry-point=$ENTRY_POINT \
+  --memory=$MEMORY \
+  --timeout=$TIMEOUT \
+  --trigger-topic=$TRIGGER_TOPIC
 ```
 
 

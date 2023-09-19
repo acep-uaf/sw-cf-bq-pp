@@ -20,48 +20,91 @@ Thus, the `bq_pp` function essentially acts as an intermediary that processes an
 
 ### Deployment
 
-Before deploying, ensure you've configured the `eiedeploy.env` file with the appropriate values. The following environment variables should be defined in the file:
-
-- `GEN2`
-- `RUNTIME`
-- `REGION`
-- `SOURCE`
-- `ENTRY_POINT`
-- `MEMORY`
-- `TIMEOUT`
-- `TRIGGER_TOPIC`
-
-Ensure to set each `<value>` in the `eiedeploy.env` file appropriately before deploying the Cloud Function. **Note:** For security reasons, do not check the `eiedeploy.env` with set values into a public repository such as GitHub.
-
 Deploy the Cloud Function with the provided shell script:
 
 ```bash
 ./eiedeploy.sh
 ```
 
-
 This script wraps the following `gcloud` command:
 
 ```bash
+ #!/bin/bash
 
-#!/bin/bash
+ # Source the .env file
+ source eiedeploy.env
 
-# Source the .env file
-source eiedeploy.env
-
-# Deploy the function
-gcloud functions deploy sw-cw-bq-pp \
-  --$GEN2 \
-  --runtime=$RUNTIME \
-  --region=$REGION \
-  --source=$SOURCE \
-  --entry-point=$ENTRY_POINT \
-  --memory=$MEMORY \
-  --timeout=$TIMEOUT \
-  --trigger-topic=$TRIGGER_TOPIC
+ # Deploy the function
+ gcloud functions deploy sw-cf-bq-pp \
+   --$GEN2 \
+   --runtime=$RUNTIME \
+   --region=$REGION \
+   --service-account=$SERVICE_ACCOUNT \
+   --source=$SOURCE \
+   --entry-point=$ENTRY_POINT \
+   --memory=$MEMORY \
+   --timeout=$TIMEOUT \
+   --trigger-topic=$TRIGGER_TOPIC \
+   --set-env-vars PP_TABLE=$PP_TABLE,PUBSUB_TOPIC=$PUBSUB_TOPIC
 ```
+### .env File Configuration
+ 
+ Before deploying the Cloud Function, ensure that the `eiedeploy.env` file contains the necessary environment variables, as the deployment script sources this file. This file should  define values for:
+ 
+ ```
+   GEN2=<value>
+   RUNTIME=<value>
+   REGION=<value>
+   SERVICE_ACCOUNT=<value>
+   SOURCE=<value>
+   ENTRY_POINT=<value>
+   MEMORY=<value>
+   TIMEOUT=<value>
+   TRIGGER_TOPIC=<value>
+   PP_TABLE=<value>
+   PUBSUB_TOPIC=<value>
+  ```
+ Replace `<value>` with the appropriate values for your deployment.
 
+### Environment Variable Descriptions
+ 
+  Below are descriptions for each environment variable used in the deployment script:
+ 
+  - **GEN2**=`<value>`:
+    - Description: Specifies the generation of the Cloud Function to deploy.  For example: `gen2` when you intend to deploy a second generation Google Cloud Function.
+ 
+  - **RUNTIME**=`<value>`:
+    - Description: Specifies the runtime environment in which the Cloud Function executes. For example: `python311` for Python 3.11.
+ 
+  - **REGION**=`<value>`:
+    - Description: The Google Cloud region where the Cloud Function will be deployed and run. Example values are `us-west1`, `europe-west1`, etc.
+ 
+  - **SERVICE_ACCOUNT**=`<value>`:
+    - Description: The service account under which the Cloud Function will run. This defines the permissions that the Cloud Function has at deployment.
+ 
+  - **SOURCE**=`<value>`:
+    - Description: Path to the source code of the Cloud Function. Typically, this points to a directory containing all the necessary files for the function.
+ 
+  - **ENTRY_POINT**=`<value>`:
+    - Description: Specifies the name of the function or method within the source code to be executed when the Cloud Function is triggered.
+ 
+  - **MEMORY**=`<value>`:
+    - Description: The amount of memory to allocate for the Cloud Function. This is denoted in megabytes, e.g., `16384MB`.
+ 
+  - **TIMEOUT**=`<value>`:
+    - Description: The maximum duration the Cloud Function is allowed to run before it is terminated. Expressed in seconds, e.g., `540s`.
+ 
+  - **TRIGGER_TOPIC**=`<value>`:
+    - Description: The Google Cloud topic under which the Cloud Function is subscribed.
+
+  - **PP_TABLE**=`<value>`:
+    - Description: The Post Processed Google BigQuery table that is created.
+ 
+  - **PUBSUB_TOPIC**=`<value>`:
+    - Description: The name of the Pub/Sub topic to which the Cloud Function publishes messages.
+ 
+  Set each `<value>` in the `eiedeploy.env` file appropriately before deploying the Cloud Function. **Note:** For security reasons, do not cheeck the `eiedeploy.env` with values set  into a public repository such as github.
 
 ### Dependencies
 
-The Cloud Function's dependencies are listed in the `requirements.txt` file and include the `google-cloud-bigquery` package.
+The Cloud Function's dependencies are listed in the `requirements.txt` file and include the `google-cloud-bigquery` and `google-cloud-pubsub` package.

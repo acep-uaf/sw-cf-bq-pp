@@ -1,5 +1,11 @@
 # SW-CW-BQ-PP Cloud Function
 
+<br>
+
+Welcome to `sw-cf-bq-pp`, a repository that plays a pivotal role in the ACEP SW Data Pipeline. It is tasked with reshaping the data post-initial validation, ensuring that it is in an optimal format for querying within BigQuery.
+
+To see how this repository contributes to the grand scheme of things, please navigate to the [ACEP SW Data Pipeline Overview](https://github.com/acep-uaf/sw-stack) repository.
+
 The `sw-cw-bq-pp` is a Cloud Function written in Python designed to process data in a BigQuery table. The function is triggered by a Pub/Sub topic and is responsible for processing data from a specified BigQuery table.
 
 ## Cloud Function
@@ -49,9 +55,9 @@ This script wraps the following `gcloud` command:
 ```
 ### .env File Configuration
  
- Before deploying the Cloud Function, ensure that the `eiedeploy.env` file contains the necessary environment variables, as the deployment script sources this file. This file should  define values for:
+ Before deploying the Cloud Function, ensure that the `eiedeploy.env` file contains the necessary environment variables, as the deployment script sources this file. This file should define values for:
  
- ```
+ ```bash
    GEN2=<value>
    RUNTIME=<value>
    REGION=<value>
@@ -105,6 +111,8 @@ This script wraps the following `gcloud` command:
  
   Set each `<value>` in the `eiedeploy.env` file appropriately before deploying the Cloud Function. **Note:** For security reasons, do not cheeck the `eiedeploy.env` with values set  into a public repository such as github.
 
-### Dependencies
-
-The Cloud Function's dependencies are listed in the `requirements.txt` file and include the `google-cloud-bigquery` and `google-cloud-pubsub` package.
+## Dependencies
+The function relies on the following packages, as outlined in the `requirements.txt` file:
+- google-cloud-bigquery
+- google-cloud-storage
+- google-cloud-pubsub

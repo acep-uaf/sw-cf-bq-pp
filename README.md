@@ -116,3 +116,18 @@ The function relies on the following packages, as outlined in the `requirements.
 - google-cloud-bigquery
 - google-cloud-storage
 - google-cloud-pubsub
+
+### Conclusion
+
+---
+
+The `sw-cf-bq-pp` repository is an integral component of the [ACEP SW Data Pipeline](https://github.com/acep-uaf/sw-stack). As a Cloud Function written in Python, it's primarily focused on reshaping and optimizing data for querying within Google's BigQuery service. This optimization is executed post-initial validation, ensuring the data is aptly structured for the subsequent stages.
+
+Leveraging the synergy between Google BigQuery and Pub/Sub, this repository serves as a robust intermediary, dynamically transforming data upon the receipt of Pub/Sub messages. The fine-tuning this Cloud Function offers goes a long way in guaranteeing the precision and structure of data queries, which in turn elevates the overall efficiency and efficacy of the entire data pipeline.
+
+We cordially invite the open-source community to delve into the depths of this repository, grasp its functionalities, and perhaps contribute to its enhancement. For a comprehensive understanding of licensing, we direct you to the [LICENSE](https://github.com/acep-uaf/sw-cf-bq-pp/blob/main/LICENSE) file in the repository's root.
+
+Your exploration and engagement with this solution are highly valued. We're optimistic that integrating this functionality will vastly enrich your data transformation processes within the Google Cloud Platform.
+
+---
+
